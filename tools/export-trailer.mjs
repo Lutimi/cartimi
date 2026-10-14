@@ -1,0 +1,10 @@
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
+const base = process.argv[2] || 'http://127.0.0.1:5173';
+const clean = code => code.split('\n//# sourceMappingURL=')[0].replace(/^import .*;$/gm, '').replace(/\bexport (?=(?:async )?function)/g, '');
+const load = async path => { const res = await fetch(base + path); if (!res.ok) throw new Error(path + ': ' + res.status); return clean(await res.text()); };
+const [art, trailer, css] = await Promise.all([load('/src/ui/arte.ts'), load('/src/ui/trailer.ts'), readFile(new URL('../src/ui/style.css', import.meta.url), 'utf8')]);
+const script = art + '\n' + trailer + '\nconst modal=document.getElementById("modal");const open=()=>abrirTrailer(modal,()=>{modal.dispatchEvent(new Event("cerrar-trailer"));modal.hidden=true;});document.getElementById("open").onclick=open;document.addEventListener("keydown",e=>{if(e.key==="Escape"){modal.dispatchEvent(new Event("cerrar-trailer"));modal.hidden=true;}});open();';
+const html = '<!doctype html><html lang="es"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Mily — El primer golpe | Clash Garage</title><style>' + css + '</style><body><main style="min-height:100vh;display:grid;place-content:center;text-align:center;padding:30px"><div class="eyebrow orange">CLASH GARAGE / DEMOLITION CLUB</div><h1>Mily. El primer golpe.</h1><p>Mini tráiler animado · 15 segundos · Exportable como vídeo</p><button id="open" class="button primary">Reproducir tráiler</button></main><div id="modal" hidden></div><script type="module">' + script + '</script></body></html>';
+await mkdir(new URL('../public/', import.meta.url), { recursive: true });
+await writeFile(new URL('../public/mily-trailer.html', import.meta.url), html);
+console.log('Tráiler independiente: public/mily-trailer.html');

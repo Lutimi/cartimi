@@ -1,0 +1,10 @@
+# Material con derechos de autor del juego original: solo para estudio, nunca se publica
+referencia-original/
+
+node_modules/
+dist/
+.DS_Store
+
+# Archivos locales de ejecución y comprobación
+vite-local.log
+artifacts/
