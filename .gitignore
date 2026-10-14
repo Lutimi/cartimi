@@ -8,3 +8,5 @@ dist/
 # Archivos locales de ejecución y comprobación
 vite-local.log
 artifacts/
+
+.vercel
